@@ -32,9 +32,19 @@ BIND等のDNSサーバー構築・設定の学習や、セミナーの復習に�
 ```bash
 # 権威DNSサーバーのIPアドレスを指定してください
 export CONTENT_DNS_IP=192.168.0.50
+
+curl -sSL https://raw.githubusercontent.com/lpi-japan/seminar_env/main/seminar/20260710/setup_content_dns.sh | sudo bash
+```
+
+- キャッシュDNSサーバー
+```bash
+# 権威DNSサーバーのIPアドレスを指定してください
+export CONTENT_DNS_IP=192.168.0.50
+
+# キャッシュDNSサーバーのIPアドレスを指定してください
 export CACHE_DNS_IP=192.168.0.60
 
-curl -sSL [https://raw.githubusercontent.com/lpi-japan/seminar_env/main/seminar/20260710/setup_content_dns.sh](https://raw.githubusercontent.com/lpi-japan/seminar_env/main/seminar/20260710/setup_content_dns.sh) | sudo bash
+curl -sSL https://raw.githubusercontent.com/lpi-japan/seminar_env/main/seminar/20260710/setup_cache_dns.sh | sudo bash
 ```
 
 ## 🔍 動作確認
