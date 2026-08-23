@@ -2,11 +2,15 @@
 set -euo pipefail
 
 # 環境変数が渡されていない場合のデフォルト値設定
+CACHE_DNS_IP="${CACHE_DNS_IP:-192.168.0.60}"
 CONTENT_DNS_IP="${CONTENT_DNS_IP:-192.168.0.50}"
+FORWARDER_IP="${FORWARDER_IP:-192.168.0.254}"
 
 echo "========================================="
-echo "コンテンツDNSのセットアップを開始します"
-echo "DNS Server IP: ${CONTENT_DNS_IP}"
+echo "キャッシュDNSのセットアップを開始します"
+echo "Cache DNS IP:    ${CACHE_DNS_IP}"
+echo "Content DNS IP:  ${CONTENT_DNS_IP}"
+echo "Forwarder IP:    ${FORWARDER_IP}"
 echo "========================================="
 
 # 1. パッケージのインストール
@@ -17,7 +21,7 @@ dnf install -y bind bind-chroot
 echo "[2/3] /etc/named.conf を生成しています..."
 cat << EOF > /etc/named.conf
 options {
-	listen-on port 53 { 127.0.0.1; ${CONTENT_DNS_IP}; };
+	listen-on port 53 { 127.0.0.1; ${CACHE_DNS_IP}; };
 	listen-on-v6 port 53 { ::1; };
 	directory 	"/var/named";
 	dump-file 	"/var/named/data/cache_dump.db";
@@ -27,15 +31,18 @@ options {
 	recursing-file	"/var/named/data/named.recursing";
 	allow-query     { localhost; 192.168.0.0/24; };
 
-	recursion no;
+	recursion yes;
 
 	dnssec-validation yes;
+	validate-except { "linuc.test"; };
 
 	managed-keys-directory "/var/named/dynamic";
 	geoip-directory "/usr/share/GeoIP";
 
 	pid-file "/run/named/named.pid";
 	session-keyfile "/run/named/session.key";
+
+	forwarders { ${FORWARDER_IP}; };
 
 	/* https://fedoraproject.org/wiki/Changes/CryptoPolicy */
 	include "/etc/crypto-policies/back-ends/bind.config";
@@ -54,39 +61,26 @@ zone "." IN {
 };
 
 zone "linuc.test." IN {
-	type master;
-	file "linuc.test.zone";
+	type forward;
+	forward only;
+	forwarders { ${CONTENT_DNS_IP}; };
 };
 
 include "/etc/named.rfc1912.zones";
 include "/etc/named.root.key";
 EOF
 
-# 3. ゾーンファイルの作成
-echo "[3/4] /var/named/linuc.test.zone を生成しています..."
-cat << EOF > /var/named/linuc.test.zone
-\$TTL 3H
-\$ORIGIN linuc.test.
-@ IN SOA @ admin.linuc.test. (
-          0     ; serial
-          1D    ; refresh
-          1H    ; retry
-          1W    ; expire
-          1M )  ; minimum
-
-@    IN NS ns1.linuc.test.
-ns1  IN A ${CONTENT_DNS_IP}
-a    IN A 192.0.2.1
-aaaa IN AAAA 2001:db8::1
-@    IN TXT "v=spf1 ip4:192.0.2.0/24 -all"
-EOF
+# 3. システム設定・所有権・SELinux・サービスの起動
+echo "[3/3] 所有権の設定およびサービスを起動しています..."
+grubby --update-kernel=ALL --args="console=tty0 console=ttyS0,115200n8" || true
+localectl set-keymap jp106
 
 # 所有権と権限の設定
-chmod 0640 /etc/named.conf /var/named/linuc.test.zone
-chown root:named /etc/named.conf /var/named/linuc.test.zone
+chmod 0640 /etc/named.conf
+chown root:named /etc/named.conf
 
 # SELinuxコンテキストの復元
-restorecon -Rv /etc/named.conf /var/named/
+restorecon -Rv /etc/named.conf
 
 # サービスの有効化と起動
 systemctl enable --now named-chroot

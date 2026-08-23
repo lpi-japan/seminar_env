@@ -27,7 +27,7 @@ BIND等のDNSサーバー構築・設定の学習や、セミナーの復習に�
 
 #### 構築方法A：スクリプト実行 (`setup*.sh`)
 
-1. 以下のコマンドを実行してセットアップを行います。
+1. AlmaLinux 9に対して以下のコマンドを実行してセットアップを行います。
 
 - 権威DNSサーバー
 ```bash
@@ -44,6 +44,9 @@ export CONTENT_DNS_IP=192.168.0.50
 
 # キャッシュDNSサーバーのIPアドレスを指定してください
 export CACHE_DNS_IP=192.168.0.60
+
+# 上位のキャッシュDNSサーバーのIPアドレスを指定してください
+export FORWARDER_IP=192.168.0.254
 
 curl -sSL https://raw.githubusercontent.com/lpi-japan/seminar_env/main/20260710/setup_cache_dns.sh | sudo -E bash
 ```
