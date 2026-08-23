@@ -21,6 +21,7 @@ BIND等のDNSサーバー構築・設定の学習や、セミナーの復習に�
 | 構築方法 | 対象 | 概要 |
 | :--- | :--- | :--- |
 | 構築方法A: スクリプト実行 | Linux環境（VM）をお持ちの方 | 付属の `setup*.sh` を実行して環境を自動構築します |
+| 構築方法B: OVAイメージ | 未提供 | 未提供 |
 
 ### 2. セットアップ手順
 
@@ -33,7 +34,7 @@ BIND等のDNSサーバー構築・設定の学習や、セミナーの復習に�
 # 権威DNSサーバーのIPアドレスを指定してください
 export CONTENT_DNS_IP=192.168.0.50
 
-curl -sSL https://raw.githubusercontent.com/lpi-japan/seminar_env/main/20260710/setup_content_dns.sh | sudo bash
+curl -sSL https://raw.githubusercontent.com/lpi-japan/seminar_env/main/20260710/setup_content_dns.sh | sudo -E bash
 ```
 
 - キャッシュDNSサーバー
@@ -44,7 +45,7 @@ export CONTENT_DNS_IP=192.168.0.50
 # キャッシュDNSサーバーのIPアドレスを指定してください
 export CACHE_DNS_IP=192.168.0.60
 
-curl -sSL https://raw.githubusercontent.com/lpi-japan/seminar_env/main/20260710/setup_cache_dns.sh | sudo bash
+curl -sSL https://raw.githubusercontent.com/lpi-japan/seminar_env/main/20260710/setup_cache_dns.sh | sudo -E bash
 ```
 
 ## 🔍 動作確認
