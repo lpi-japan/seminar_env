@@ -38,7 +38,7 @@ sudo reboot
 
 #### 構築方法B：OVAイメージ
 
-[OVAイメージ](https://linuc-assets.sukimaru.com/20260724/Debian13-Docker-Virsh-Lab.ova)をダウンロードして、VirtualBoxにインポートします。
+[OVAイメージ](https://linuc.sukimaru.com/20260724/Debian13-Docker-Virsh-Lab.ova)をダウンロードして、VirtualBoxにインポートします。
 
 ## 🔍 動作確認
 環境構築が正しく完了しているか、以下のコマンドで確認してください。
